@@ -7,6 +7,5 @@ export default {
   forceExit: true,
   clearMocks: true,
   resetMocks: true,
-  restoreMocks: true,
-  injectGlobals: false
+  restoreMocks: true
 };

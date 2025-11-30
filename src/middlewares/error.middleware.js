@@ -13,7 +13,8 @@ const handleCastError = (err) => {
  * Handle duplicate key errors from MongoDB
  */
 const handleDuplicateKeyError = (err) => {
-  const match = err.errmsg?.match(/(["'])(\\?.)*?\1/);
+  // Use non-greedy quantifier and proper escape handling
+  const match = err.errmsg?.match(/(["'])(?:[^"'\\]|\\.)*?\1/);
   const value = match ? match[0] : 'unknown';
   const message = `Duplicate field value: ${value}. Please use another value.`;
   return { statusCode: 400, message, isOperational: true };

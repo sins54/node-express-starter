@@ -1,4 +1,4 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import ApiResponse from '../src/utils/apiResponse.js';
 
 describe('ApiResponse', () => {
