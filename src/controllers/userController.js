@@ -1,90 +1,53 @@
-import User from '../models/User.js';
-import AppError from '../utils/AppError.js';
+import userService from '#services/userService';
+import catchAsync from '#utils/catchAsync';
+import ApiResponse from '#utils/apiResponse';
+
+/**
+ * User Controller - Handles HTTP requests/responses only
+ * All business logic is delegated to userService
+ */
 
 /**
  * Get all users
+ * @route GET /api/v1/users
  */
-export const getAllUsers = async (req, res, next) => {
-  try {
-    const users = await User.find({ active: true });
-    res.status(200).json({
-      status: 'success',
-      results: users.length,
-      data: { users }
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const getAllUsers = catchAsync(async (req, res) => {
+  const users = await userService.getAllUsers();
+  ApiResponse.success(res, 200, 'Users retrieved successfully', { users });
+});
 
 /**
  * Get a single user by ID
+ * @route GET /api/v1/users/:id
  */
-export const getUser = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return next(new AppError('No user found with that ID', 404));
-    }
-    res.status(200).json({
-      status: 'success',
-      data: { user }
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const getUser = catchAsync(async (req, res) => {
+  const user = await userService.getUserById(req.params.id);
+  ApiResponse.success(res, 200, 'User retrieved successfully', { user });
+});
 
 /**
  * Create a new user
+ * @route POST /api/v1/users
  */
-export const createUser = async (req, res, next) => {
-  try {
-    const user = await User.create(req.body);
-    res.status(201).json({
-      status: 'success',
-      data: { user }
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const createUser = catchAsync(async (req, res) => {
+  const user = await userService.createUser(req.body);
+  ApiResponse.created(res, 'User created successfully', { user });
+});
 
 /**
  * Update a user
+ * @route PATCH /api/v1/users/:id
  */
-export const updateUser = async (req, res, next) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
-    if (!user) {
-      return next(new AppError('No user found with that ID', 404));
-    }
-    res.status(200).json({
-      status: 'success',
-      data: { user }
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const updateUser = catchAsync(async (req, res) => {
+  const user = await userService.updateUser(req.params.id, req.body);
+  ApiResponse.success(res, 200, 'User updated successfully', { user });
+});
 
 /**
  * Delete a user (soft delete)
+ * @route DELETE /api/v1/users/:id
  */
-export const deleteUser = async (req, res, next) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, { active: false });
-    if (!user) {
-      return next(new AppError('No user found with that ID', 404));
-    }
-    res.status(204).json({
-      status: 'success',
-      data: null
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const deleteUser = catchAsync(async (req, res) => {
+  await userService.deleteUser(req.params.id);
+  ApiResponse.noContent(res);
+});
